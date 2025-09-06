@@ -9,7 +9,6 @@ import EventSignPrinting from '@/components/sections/event-sign-printing';
 import TestimonialsCarousel from '@/components/sections/testimonials-carousel';
 import ThreeStepProcess from '@/components/sections/three-step-process';
 import TrustedByProfessionals from '@/components/sections/trusted-by-professionals';
-import FeatureHighlights from '@/components/sections/feature-highlights';
 import GetStartedWithSquareSigns from '@/components/sections/get-started-with-squaresigns';
 import CompanyDescription from '@/components/sections/company-description';
 import Footer from '@/components/sections/footer';
@@ -28,7 +27,6 @@ export default function Home() {
       <TestimonialsCarousel />
       <ThreeStepProcess />
       <TrustedByProfessionals />
-      <FeatureHighlights />
       <GetStartedWithSquareSigns />
       <CompanyDescription />
       <Footer />

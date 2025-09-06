@@ -9,6 +9,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import AutoScroll from "embla-carousel-auto-scroll";
 
 const trendyProducts = [
   {
@@ -56,6 +57,16 @@ const trendyProducts = [
 ];
 
 export default function WhatsNewTrendy() {
+  // Use a ref to keep a single plugin instance across renders
+  const autoScroll = React.useRef(
+    AutoScroll({
+      speed: 1.2, // smooth continuous scroll
+      startDelay: 0,
+      stopOnMouseEnter: true, // pause on hover
+      stopOnInteraction: false, // keep playing after pointer interactions
+    })
+  );
+
   return (
     <section className="bg-secondary py-20">
       <div className="container">
@@ -67,13 +78,16 @@ export default function WhatsNewTrendy() {
             align: "start",
             loop: true,
           }}
+          plugins={[autoScroll.current]}
           className="w-full"
+          onMouseEnter={() => autoScroll.current?.stop()}
+          onMouseLeave={() => autoScroll.current?.play()}
         >
-          <CarouselContent className="-ml-4">
+          <CarouselContent>
             {trendyProducts.map((product) => (
               <CarouselItem key={product.title} className="pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-[20%]">
                 <a href={product.href} title={product.title} className="block group h-full">
-                  <div className="bg-card rounded-lg border border-border overflow-hidden h-full flex flex-col transition-shadow duration-300 hover:shadow-lg">
+                  <div className="bg-card rounded-lg border border-border overflow-hidden h-full flex flex-col transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
                     <div className="relative w-full aspect-[295/200]">
                       <Image
                         src={product.imageUrl}

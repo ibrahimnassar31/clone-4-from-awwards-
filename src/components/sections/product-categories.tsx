@@ -1,5 +1,10 @@
+"use client";
+
+import React, { useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { cn } from "@/lib/utils";
+import { gsap } from 'gsap';
+import { useInView } from 'react-intersection-observer';
 
 type Product = {
   name: string;
@@ -76,12 +81,17 @@ const products: Product[] = [
 
 interface ProductCardProps {
   product: Product;
+  nodeRef?: (el: HTMLDivElement | null) => void;
 }
 
-const ProductCard = ({ product }: ProductCardProps) => {
+const ProductCard = ({ product, nodeRef }: ProductCardProps) => {
   return (
     <a href={product.href} className="block group text-decoration-none">
-      <div className="relative flex flex-col h-full rounded-md shadow-[0_2px_4px_rgba(0,0,0,0.1)] bg-white text-center transition-all duration-300 group-hover:-translate-y-[5px] group-hover:shadow-[0_4px_20px_rgba(35,34,50,0.08)]">
+      <div
+        ref={nodeRef}
+        className="pc-card relative flex flex-col h-full rounded-md shadow-[0_2px_4px_rgba(0,0,0,0.1)] bg-white text-center transition-all duration-300 group-hover:-translate-y-[5px] group-hover:translate-x-[10px] group-hover:scale-[1.10] group-hover:shadow-[0_4px_20px_rgba(35,34,50,0.08)]"
+        style={{ willChange: 'transform, opacity', transformStyle: 'preserve-3d' as any, backfaceVisibility: 'hidden' as any }}
+      >
         {product.badge && (
           <div className={cn(
             "absolute -top-px right-2.5 z-10 text-white text-xs font-semibold py-1 px-2.5 rounded-b-md",
@@ -111,12 +121,63 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
 
 const ProductCategories = () => {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const { ref: inViewRef, inView } = useInView({ triggerOnce: true, rootMargin: '0px 0px -10% 0px' });
+
+  const setContainerRefs = useCallback((node: HTMLDivElement | null) => {
+    containerRef.current = node;
+    inViewRef(node);
+  }, [inViewRef]);
+
+  const setCardRef = useCallback((el: HTMLDivElement | null, index: number) => {
+    cardRefs.current[index] = el;
+  }, []);
+
+  useEffect(() => {
+    if (!inView) return;
+
+    const ctx = gsap.context(() => {
+      const cards = cardRefs.current.filter(Boolean) as HTMLDivElement[];
+      if (!cards.length) return;
+
+      gsap.set(cards, {
+        transformPerspective: 1000,
+        transformOrigin: '50% 50%',
+        rotationY: -360,
+        transformStyle: 'preserve-3d',
+        backfaceVisibility: 'hidden',
+        x: (i: number) => gsap.utils.random(-60, 60, 1),
+        y: (i: number) => gsap.utils.random(50, 120, 1),
+        scale: 0.96,
+        opacity: 0,
+      });
+
+      // Smooth, powerful 360° flip-in and settle
+      gsap.to(cards, {
+        keyframes: [
+          { rotationY: '+=360', x: 0, y: 0, opacity: 1, scale: 1, duration: 1.1, ease: 'power3.out' },
+          { y: -6, duration: 0.22, ease: 'power2.out' },
+          { y: 0, duration: 0.5, ease: 'elastic.out(1, 0.6)' },
+        ],
+        stagger: 0.1,
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, [inView]);
+
   return (
     <section className="py-10">
       <div className="max-w-[1200px] mx-auto px-6">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
-          {products.map((product) => (
-            <ProductCard key={product.name} product={product} />
+        <div
+          ref={setContainerRefs}
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6"
+          style={{ perspective: 1000 }}
+        >
+          {products.map((product, idx) => (
+            <ProductCard key={product.name} product={product} nodeRef={(el) => setCardRef(el, idx)} />
           ))}
         </div>
       </div>

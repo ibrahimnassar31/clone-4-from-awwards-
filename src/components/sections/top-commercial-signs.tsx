@@ -1,3 +1,4 @@
+'use client'
 import Image from "next/image";
 
 const products = [
@@ -47,7 +48,7 @@ const TopCommercialSigns = () => {
             <a
               key={product.title}
               href={product.href}
-              className="group block rounded-lg border border-border bg-card p-6 shadow-sm transition-shadow duration-300 hover:shadow-lg"
+              className="flash-card group relative block overflow-hidden rounded-lg border border-border bg-card p-6 shadow-sm transition-shadow duration-300 hover:shadow-lg transform-gpu will-change-transform transition-transform ease-out hover:translate-x-[5px] hover:scale-[1.1]"
             >
               <div className="relative mb-6">
                 <div className="flex aspect-square items-center justify-center overflow-hidden rounded-sm bg-light-gray">
@@ -56,7 +57,7 @@ const TopCommercialSigns = () => {
                     alt={product.imageAlt}
                     width={270}
                     height={270}
-                    className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+                    className="h-full w-full object-contain"
                   />
                 </div>
                 {product.isBestSeller && (
@@ -75,6 +76,34 @@ const TopCommercialSigns = () => {
           ))}
         </div>
       </div>
+
+      {/* Camera flash effect on hover */}
+      <style jsx>{`
+        .flash-card::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(
+            circle at 50% 50%,
+            rgba(255, 255, 255, 0.9) 0%,
+            rgba(255, 255, 255, 0.55) 30%,
+            rgba(255, 255, 255, 0.0) 60%
+          );
+          opacity: 0;
+          pointer-events: none;
+        }
+
+        .flash-card:hover::before {
+          animation: camera-flash 420ms ease-out;
+        }
+
+        @keyframes camera-flash {
+          0% { opacity: 0; }
+          18% { opacity: 1; }
+          45% { opacity: 0.45; }
+          100% { opacity: 0; }
+        }
+      `}</style>
     </section>
   );
 };

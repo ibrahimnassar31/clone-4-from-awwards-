@@ -46,9 +46,16 @@ const eventSignProducts: Product[] = [
 ];
 
 const ProductCard = ({ product }: { product: Product }) => (
-  <a href={product.href} className="block group h-full">
-    <div className="bg-white border border-border rounded-lg shadow-sm h-full flex flex-col transition-shadow duration-300 group-hover:shadow-lg overflow-visible">
-      <div className="bg-light-gray p-6 flex items-center justify-center h-[234px] rounded-t-lg">
+  <a href={product.href} className="block group h-full relative">
+    {/* Card container with hover layers */}
+    <div className="relative bg-white border border-border rounded-lg shadow-sm h-full flex flex-col transition-shadow duration-300 overflow-hidden group-hover:shadow-xl">
+      {/* Hover effect layers */}
+      <span className="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-primary transform transition-all duration-500 group-hover:w-full group-hover:h-full group-hover:border-primary/0 z-0"></span>
+      <span className="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-primary transform transition-all duration-500 group-hover:w-full group-hover:h-full group-hover:border-primary/0 z-0"></span>
+      <span className="absolute inset-0 bg-primary/10 opacity-0 transition-opacity duration-500 group-hover:opacity-100 z-0"></span>
+
+      {/* Content */}
+      <div className="relative z-10 bg-light-gray p-6 flex items-center justify-center h-[234px] rounded-t-lg">
         <Image
           src={product.imageUrl}
           alt={product.imageAlt}
@@ -57,7 +64,7 @@ const ProductCard = ({ product }: { product: Product }) => (
           className="max-w-full max-h-full object-contain"
         />
       </div>
-      <div className="p-6 pt-10 flex-grow relative flex flex-col">
+      <div className="relative z-10 p-6 pt-10 flex-grow flex flex-col">
         {product.isBestSeller && (
           <span className="absolute -top-[14px] right-4 bg-best-seller-orange text-white text-xs font-bold px-4 py-2 rounded">
             Best Seller
@@ -78,7 +85,7 @@ export default function EventSignPrinting() {
   return (
     <section className="py-20 bg-white">
       <div className="container">
-        <h3 className="mb-10">
+        <h3 className="mb-10 font-display text-2xl font-bold">
           Event Sign Printing
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
